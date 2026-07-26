@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>StreamCafe Admin</title>
+  <link rel="stylesheet" href="./assets/styles.css?v=9.1">
+</head>
+<body class="admin-page">
+
+<header class="admin-exact-header">
+  <a class="admin-exact-brand" href="./index.html">
+    <span class="admin-exact-logo">▶</span>
+    <span>StreamCafe</span>
+  </a>
+
+  <h1>Manage content</h1>
+
+  <nav class="admin-exact-nav" aria-label="Admin navigation">
+    <button type="button" data-admin-section="dashboard">Dashboard</button>
+    <span>|</span>
+    <button class="active" type="button" data-admin-section="create">Create Content</button>
+    <span>|</span>
+    <button type="button" data-admin-section="existing">Existing Content</button>
+    <span>|</span>
+    <button id="logoutButton" type="button">Sign Out</button>
+  </nav>
+</header>
+
+<main class="admin-exact-main">
+  <p id="signedInAs" class="admin-exact-signed-in"></p>
+<section class="admin-section-panel" data-admin-panel="dashboard">
+    <div class="admin-dashboard-title">
+      <p class="eyebrow">OVERVIEW</p>
+      <h2>Dashboard</h2>
+      <button id="refreshAnalyticsButton" type="button">Refresh analytics</button>
+    </div>
+
+    <div class="metrics-grid">
+      <article class="metric-card"><span>Total users</span><strong id="metricUsers">—</strong></article>
+      <article class="metric-card"><span>Total views</span><strong id="metricViews">—</strong></article>
+      <article class="metric-card"><span>Video plays</span><strong id="metricPlays">—</strong></article>
+      <article class="metric-card"><span>Completed videos</span><strong id="metricCompletes">—</strong></article>
+      <article class="metric-card"><span>Favorites</span><strong id="metricFavorites">—</strong></article>
+      <article class="metric-card"><span>Searches</span><strong id="metricSearches">—</strong></article>
+    </div>
+
+    <div class="analytics-grid">
+      <section class="panel">
+        <h3>Most watched</h3>
+        <div id="topVideos" class="analytics-list"></div>
+      </section>
+      <section class="panel">
+        <h3>Popular searches</h3>
+        <div id="topSearches" class="analytics-list"></div>
+      </section>
+    </div>
+
+    <p id="analyticsMessage" class="message"></p>
+  </section>
+
+  <section class="admin-section-panel active" data-admin-panel="create">
+    <form id="postForm" class="admin-exact-editor">
+      <input id="postId" type="hidden">
+      <input id="posterUrl" type="hidden">
+
+      <section class="admin-exact-content-card">
+        <div class="admin-exact-card-heading">
+          <p>CONTENT DETAILS</p>
+          <h2 id="formTitle">Create content</h2>
+        </div>
+
+        <div class="admin-exact-two-columns">
+          <label>
+            Content type
+            <select id="contentType">
+              <option value="movie">Movie</option>
+              <option value="series">Series episode</option>
+            </select>
+          </label>
+
+          <label>
+            Category
+            <input id="category" maxlength="80" placeholder="Drama">
+          </label>
+        </div>
+
+        <label>
+          Title
+          <input id="title" required maxlength="160">
+        </label>
+
+        <label>
+          Description
+          <textarea id="description" rows="7" maxlength="3000"></textarea>
+        </label>
+
+        <label>
+          Video source URL
+          <input id="videoUrl" type="url" required placeholder="Google Drive share link or direct MP4 URL">
+        </label>
+
+        <div id="seriesFields" class="admin-exact-series-fields" hidden>
+          <label>
+            Series title
+            <input id="seriesTitle" maxlength="160">
+          </label>
+
+          <div class="admin-exact-two-columns">
+            <label>
+              Season number
+              <input id="seasonNumber" type="number" min="1">
+            </label>
+
+            <label>
+              Episode number
+              <input id="episodeNumber" type="number" min="1">
+            </label>
+          </div>
+        </div>
+
+        <p id="formMessage" class="message"></p>
+      </section>
+
+      <aside class="admin-exact-sidebar">
+        <section class="admin-exact-sidebar-card">
+          <h3>Publish</h3>
+
+          <label>
+            Release year
+            <input id="releaseYear" type="number" min="1900" max="2100">
+          </label>
+
+          <label class="admin-exact-toggle">
+            <span>Featured</span>
+            <input id="featured" type="checkbox">
+          </label>
+
+          <div class="admin-exact-divider"></div>
+
+          <h3>Poster</h3>
+
+          <label>
+            Horizontal poster
+            <input id="posterFile" type="file" accept="image/jpeg,image/png,image/webp">
+          </label>
+
+          <p class="help-text">Recommended: 1280 × 720 pixels, maximum 5 MB.</p>
+
+          <button id="uploadPosterButton" class="admin-exact-secondary-button" type="button">
+            Upload poster
+          </button>
+
+          <p id="uploadMessage" class="message"></p>
+          <img id="posterPreview" class="poster-preview-horizontal" alt="" hidden>
+
+          <label class="admin-exact-toggle">
+            <span>Published</span>
+            <input id="published" type="checkbox" checked>
+          </label>
+
+          <button id="saveButton" class="admin-exact-primary-button" type="submit">
+            Save content
+          </button>
+
+          <button id="cancelEditButton" class="admin-exact-secondary-button" type="button" hidden>
+            Cancel edit
+          </button>
+        </section>
+      </aside>
+    </form>
+  </section>
+
+  <section class="admin-section-panel" data-admin-panel="existing">
+    <section class="admin-exact-existing-card">
+      <div class="admin-exact-existing-heading">
+        <div>
+          <p class="eyebrow">CONTENT LIBRARY</p>
+          <h2>Existing content</h2>
+        </div>
+        <button id="refreshButton" type="button">Refresh</button>
+      </div>
+
+      <p id="postsMessage" class="message">Loading content…</p>
+      <div id="postsList" class="admin-post-list"></div>
+    </section>
+  </section>
+</main>
+
+<script type="module" src="./assets/admin.js?v=9.2"></script>
+</body>
+</html>

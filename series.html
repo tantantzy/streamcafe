@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Series — StreamCafe</title>
+  <link rel="stylesheet" href="./assets/styles.css?v=8.3.1">
+</head>
+<body class="catalog-page series-page">
+<header class="header">
+  <a class="brand" href="./index.html"><span>▶</span> StreamCafe</a>
+  <nav class="main-nav">
+    <a href="./index.html">Home</a>
+    <a class="active" href="./series.html">Series</a>
+    <a href="./movies.html">Movies</a>
+    <a href="./search.html">Search</a>
+      <a data-account-link href="./auth.html">Sign in</a>
+  </nav>
+</header>
+
+<main class="page-main catalog-page-main">
+  <section class="page-hero compact-hero catalog-hero">
+    <p class="eyebrow">BINGE-WORTHY STORIES</p>
+    <h1>Series</h1>
+    <p>Browse every series and continue from any available episode.</p>
+  </section>
+
+  <section class="catalog catalog-expanded">
+    <div class="section-heading">
+      <div><p class="eyebrow">ALL SERIES</p><h2>Browse series</h2></div>
+      <select id="seriesCategoryFilter">
+        <option value="">All categories</option>
+      </select>
+    </div>
+    <p id="seriesMessage" class="message">Loading series…</p>
+    <div id="seriesCatalog" class="video-grid"></div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <nav class="footer-links" aria-label="Footer navigation">
+    <a href="./privacy.html">Privacy Policy</a>
+    <span aria-hidden="true">•</span>
+    <a href="./terms.html">Terms</a>
+    <span aria-hidden="true">•</span>
+    <a href="./contact.html">Contact</a>
+  </nav>
+
+  <p class="footer-copyright">© 2026 StreamCafe</p>
+  <p class="developer-credit">Developed by <strong>TanTanTzy</strong></p>
+</footer>
+
+<script type="module" src="./assets/series.js"></script>
+<script type="module" src="./assets/session.js?v=8.0"></script>
+<script type="module" src="./assets/mobile-nav.js?v=8.3.1"></script>
+</body>
+</html>

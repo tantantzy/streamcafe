@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Sign in — StreamCafe</title>
+  <link rel="stylesheet" href="./assets/styles.css?v=8.3.1">
+</head>
+<body>
+<header class="header">
+  <a class="brand" href="./index.html"><span>▶</span> StreamCafe</a>
+  <nav class="main-nav">
+    <a href="./index.html">Home</a>
+    <a href="./series.html">Series</a>
+    <a href="./movies.html">Movies</a>
+    <a href="./search.html">Search</a>
+  </nav>
+</header>
+
+<main class="account-page">
+  <section class="account-shell">
+    <div class="account-intro">
+      <p class="eyebrow">STREAMCAFE ACCOUNT</p>
+      <h1>Save your favorites and continue on any device.</h1>
+      <p>Sign in to sync your list, watch history, and playback progress.</p>
+    </div>
+
+    <section class="panel account-panel">
+      <div class="auth-tabs">
+        <button id="showLogin" class="auth-tab active" type="button">Sign in</button>
+        <button id="showSignup" class="auth-tab" type="button">Create account</button>
+      </div>
+
+      <form id="loginForm" class="auth-form">
+        <label>Email<input id="loginEmail" type="email" autocomplete="email" required></label>
+        <label>Password<input id="loginPassword" type="password" autocomplete="current-password" required></label>
+        <button class="button" type="submit">Sign in</button>
+        <button id="showReset" class="text-button" type="button">Forgot password?</button>
+      </form>
+
+      <form id="signupForm" class="auth-form" hidden>
+        <label>Display name<input id="signupName" maxlength="80" autocomplete="name" required></label>
+        <label>Email<input id="signupEmail" type="email" autocomplete="email" required></label>
+        <label>Password<input id="signupPassword" type="password" minlength="8" autocomplete="new-password" required></label>
+        <button class="button" type="submit">Create account</button>
+      </form>
+
+      <form id="resetForm" class="auth-form" hidden>
+        <h2>Reset password</h2>
+        <label>Email<input id="resetEmail" type="email" autocomplete="email" required></label>
+        <button class="button" type="submit">Send reset email</button>
+        <button id="backToLogin" class="text-button" type="button">Back to sign in</button>
+      </form>
+
+      <p id="authMessage" class="message" aria-live="polite"></p>
+    </section>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <nav class="footer-links">
+    <a href="./privacy.html">Privacy Policy</a><span>•</span>
+    <a href="./terms.html">Terms</a><span>•</span>
+    <a href="./contact.html">Contact</a>
+  </nav>
+  <p class="footer-copyright">© 2026 StreamCafe</p>
+  <p class="developer-credit">Developed by <strong>TanTanTzy</strong></p>
+</footer>
+<script type="module" src="./assets/auth.js?v=8.0"></script>
+<script type="module" src="./assets/mobile-nav.js?v=8.3.1"></script>
+</body>
+</html>
