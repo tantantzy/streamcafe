@@ -4391,3 +4391,51 @@ body.admin-page {
     bottom: -2px;
   }
 }
+
+
+/* =========================================================
+   StreamCafe Admin v2.1 — Most Watched overflow fix
+   ========================================================= */
+
+.admin-section-panel[data-admin-panel="dashboard"] .analytics-grid {
+  min-width: 0;
+}
+
+.admin-section-panel[data-admin-panel="dashboard"] .analytics-grid > .panel {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.admin-section-panel[data-admin-panel="dashboard"] .analytics-list {
+  min-width: 0;
+}
+
+.admin-section-panel[data-admin-panel="dashboard"] .analytics-row {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+}
+
+.admin-section-panel[data-admin-panel="dashboard"] .analytics-row span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-section-panel[data-admin-panel="dashboard"] .analytics-row strong {
+  flex: 0 0 auto;
+  white-space: nowrap;
+  text-align: right;
+}
+
+/* Let titles wrap on narrower screens instead of pushing the count outside. */
+@media (max-width: 900px) {
+  .admin-section-panel[data-admin-panel="dashboard"] .analytics-row span {
+    white-space: normal;
+    overflow-wrap: anywhere;
+    line-height: 1.35;
+  }
+}

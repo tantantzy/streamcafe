@@ -188,3 +188,11 @@ The selected section is remembered during the current browser session.
 - Preserved the exact approved admin layout.
 - Improved file-input fit inside the Poster sidebar.
 - Added a subtle active-menu indicator.
+
+
+## Admin v2.1 — Most Watched fix
+
+- Prevented long video titles from pushing play counts outside the panel.
+- Added ellipsis on desktop for very long titles.
+- Added wrapping on smaller screens.
+- Kept the dashboard design and functionality unchanged.
