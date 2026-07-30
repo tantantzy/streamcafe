@@ -80,24 +80,54 @@ function bindNavigation() {
   });
 }
 
-async function loadPosts() {
-  const { data, error } = await supabase
-    .from("video_posts")
-    .select("*")
-    .order("created_at", { ascending: false });
+function normalizeSearchValue(value) {
+  return String(value || "").trim().toLowerCase();
+}
 
-  if (error) {
-    setText("#postsMessage", error.message);
-    return;
-  }
+function postMatchesExistingSearch(post, query) {
+  if (!query) return true;
 
-  posts = data || [];
-  setText("#postsMessage", posts.length ? "" : "No content yet.");
+  const searchable = [
+    post.title,
+    post.series_title,
+    post.category,
+    post.release_year,
+    post.content_type === "series" ? "series episode tv series" : "movie",
+    post.published ? "published" : "draft",
+    post.season_number ? `season ${post.season_number}` : "",
+    post.episode_number ? `episode ${post.episode_number}` : ""
+  ]
+    .map(normalizeSearchValue)
+    .join(" ");
 
+  return searchable.includes(query);
+}
+
+function renderPosts() {
   const list = $("#postsList");
+  const searchInput = $("#existingContentSearch");
+  const clearButton = $("#clearExistingContentSearch");
   if (!list) return;
 
-  list.innerHTML = posts.map(post => `
+  const query = normalizeSearchValue(searchInput?.value);
+  const visiblePosts = posts.filter(post => postMatchesExistingSearch(post, query));
+
+  if (clearButton) clearButton.hidden = !query;
+
+  if (!posts.length) {
+    setText("#postsMessage", "No content yet.");
+  } else if (!visiblePosts.length) {
+    setText("#postsMessage", `No content matches "${searchInput.value.trim()}".`);
+  } else {
+    setText(
+      "#postsMessage",
+      query
+        ? `${visiblePosts.length} of ${posts.length} item${posts.length === 1 ? "" : "s"}`
+        : `${posts.length} item${posts.length === 1 ? "" : "s"}`
+    );
+  }
+
+  list.innerHTML = visiblePosts.map(post => `
     <article class="admin-post">
       <img src="${esc(post.poster_url)}" alt="" loading="lazy">
       <div>
@@ -105,7 +135,15 @@ async function loadPosts() {
           <h3>${esc(post.title)}</h3>
           <span class="${post.published ? "published" : "draft"}">${post.published ? "Published" : "Draft"}</span>
         </div>
-        <p>${post.content_type === "series" ? `Series · ${esc(post.series_title || "")}` : "Movie"}</p>
+        <p>${
+          post.content_type === "series"
+            ? `Series · ${esc(post.series_title || "")}${
+                post.season_number || post.episode_number
+                  ? ` · S${esc(post.season_number || 1)} E${esc(post.episode_number || 1)}`
+                  : ""
+              }`
+            : `Movie${post.release_year ? ` · ${esc(post.release_year)}` : ""}`
+        }</p>
         <div class="admin-post-actions">
           <button class="text-button" type="button" data-edit="${post.id}">Edit</button>
           <button class="text-button danger" type="button" data-delete="${post.id}">Delete</button>
@@ -117,9 +155,27 @@ async function loadPosts() {
   list.querySelectorAll("[data-edit]").forEach(button => {
     button.addEventListener("click", () => editPost(button.dataset.edit));
   });
+
   list.querySelectorAll("[data-delete]").forEach(button => {
     button.addEventListener("click", () => deletePost(button.dataset.delete));
   });
+}
+
+async function loadPosts() {
+  setText("#postsMessage", "Loading content…");
+
+  const { data, error } = await supabase
+    .from("video_posts")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    setText("#postsMessage", error.message);
+    return;
+  }
+
+  posts = data || [];
+  renderPosts();
 }
 
 function editPost(id) {
@@ -316,6 +372,18 @@ function bindControls() {
   $("#cancelEditButton")?.addEventListener("click", resetForm);
   $("#refreshButton")?.addEventListener("click", loadPosts);
   $("#refreshAnalyticsButton")?.addEventListener("click", loadAnalytics);
+
+  const existingSearch = $("#existingContentSearch");
+  const clearExistingSearch = $("#clearExistingContentSearch");
+
+  existingSearch?.addEventListener("input", renderPosts);
+  existingSearch?.addEventListener("search", renderPosts);
+
+  clearExistingSearch?.addEventListener("click", () => {
+    existingSearch.value = "";
+    existingSearch.focus();
+    renderPosts();
+  });
 }
 
 async function init() {

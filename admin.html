@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>StreamCafe Admin</title>
-  <link rel="stylesheet" href="./assets/styles.css?v=9.3">
+  <link rel="stylesheet" href="./assets/styles.css?v=9.4">
 </head>
 <body class="admin-page">
 
@@ -181,12 +181,26 @@
         <button id="refreshButton" type="button">Refresh</button>
       </div>
 
+      <div class="admin-content-search">
+        <label for="existingContentSearch">Search content</label>
+        <div class="admin-content-search-box">
+          <span aria-hidden="true">⌕</span>
+          <input
+            id="existingContentSearch"
+            type="search"
+            placeholder="Search title, series, category, year, movie, series, published or draft"
+            autocomplete="off"
+          >
+          <button id="clearExistingContentSearch" type="button" hidden>Clear</button>
+        </div>
+      </div>
+
       <p id="postsMessage" class="message">Loading content…</p>
       <div id="postsList" class="admin-post-list"></div>
     </section>
   </section>
 </main>
 
-<script type="module" src="./assets/admin.js?v=9.2"></script>
+<script type="module" src="./assets/admin.js?v=9.4"></script>
 </body>
 </html>

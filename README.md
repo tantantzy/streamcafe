@@ -196,3 +196,13 @@ The selected section is remembered during the current browser session.
 - Added ellipsis on desktop for very long titles.
 - Added wrapping on smaller screens.
 - Kept the dashboard design and functionality unchanged.
+
+
+## Admin v2.2 — Existing Content search
+
+- Added instant search to Existing Content.
+- Searches title, series title, category, year, content type, season, episode,
+  and published/draft status.
+- Added a clear button and filtered result count.
+- Search runs locally after content loads, so it does not reload the page or
+  repeatedly query Supabase.

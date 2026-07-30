@@ -4439,3 +4439,82 @@ body.admin-page {
     line-height: 1.35;
   }
 }
+
+
+/* =========================================================
+   StreamCafe Admin v2.2 — Existing Content search
+   ========================================================= */
+
+.admin-content-search {
+  margin: 0 0 14px;
+}
+
+.admin-content-search > label {
+  display: block;
+  margin-bottom: 7px;
+  color: #aeb5c2;
+  font-size: .68rem;
+  font-weight: 700;
+}
+
+.admin-content-search-box {
+  min-height: 42px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 9px;
+  padding: 0 10px;
+  border: 1px solid rgba(255,255,255,.09);
+  border-radius: 8px;
+  background: #11141a;
+}
+
+.admin-content-search-box:focus-within {
+  border-color: #737b8b;
+  outline: 2px solid rgba(255,255,255,.05);
+}
+
+.admin-content-search-box > span {
+  color: #8d95a5;
+  font-size: 1rem;
+}
+
+.admin-content-search-box input {
+  width: 100%;
+  min-width: 0;
+  min-height: 40px;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #f4f5f8;
+  font-size: .78rem;
+}
+
+.admin-content-search-box input::-webkit-search-cancel-button {
+  display: none;
+}
+
+.admin-content-search-box button {
+  padding: 5px 7px;
+  border: 0;
+  background: transparent;
+  color: #a99aff;
+  font-size: .68rem;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.admin-content-search-box button:hover {
+  color: #fff;
+}
+
+@media (max-width: 620px) {
+  .admin-content-search-box {
+    min-height: 45px;
+  }
+
+  .admin-content-search-box input {
+    font-size: .76rem;
+  }
+}
