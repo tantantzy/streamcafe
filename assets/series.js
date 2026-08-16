@@ -1,4 +1,4 @@
-import { isConfigured, listPublishedPosts } from "./firebase.js?v=10.3";
+import { isConfigured, listPublishedPosts } from "./firebase.js?v=10.1";
 import { card } from "./cards.js?v=8.0";
 
 const grid = document.querySelector("#seriesCatalog");

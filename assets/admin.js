@@ -155,100 +155,104 @@ async function deletePost(id) {
   }
 }
 
-async function compressPosterFile(file) {
-  if (!file) throw new Error("Choose an image first.");
+async function optimizePoster(file) {
+  if (!file) {
+    throw new Error("Choose an image first.");
+  }
 
   if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
-    throw new Error("Please choose a JPG, PNG, or WebP image.");
+    throw new Error("Use JPG, PNG, or WebP.");
   }
 
-  if (file.size > 10 * 1024 * 1024) {
-    throw new Error("Please choose an image smaller than 10 MB.");
+  if (file.size > 5 * 1024 * 1024) {
+    throw new Error("Maximum source image size is 5 MB.");
   }
 
-  const image = await new Promise((resolve, reject) => {
-    const img = new Image();
-    const objectUrl = URL.createObjectURL(file);
+  const objectUrl = URL.createObjectURL(file);
 
-    img.onload = () => {
-      URL.revokeObjectURL(objectUrl);
-      resolve(img);
-    };
+  try {
+    const image = await new Promise((resolve, reject) => {
+      const img = new Image();
 
-    img.onerror = () => {
-      URL.revokeObjectURL(objectUrl);
-      reject(new Error("Unable to read the selected image."));
-    };
-
-    img.src = objectUrl;
-  });
-
-  const maxWidth = 1280;
-  const maxHeight = 720;
-  const scale = Math.min(
-    1,
-    maxWidth / image.naturalWidth,
-    maxHeight / image.naturalHeight
-  );
-
-  const width = Math.max(1, Math.round(image.naturalWidth * scale));
-  const height = Math.max(1, Math.round(image.naturalHeight * scale));
-
-  const canvas = document.createElement("canvas");
-  canvas.width = width;
-  canvas.height = height;
-
-  const context = canvas.getContext("2d", { alpha: false });
-  context.drawImage(image, 0, 0, width, height);
-
-  const qualities = [0.78, 0.68, 0.58, 0.48, 0.38];
-  const maxBytes = 650 * 1024;
-
-  for (const quality of qualities) {
-    const blob = await new Promise(resolve =>
-      canvas.toBlob(resolve, "image/webp", quality)
-    );
-
-    if (!blob) continue;
-
-    const dataUrl = await new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = () => reject(new Error("Unable to process the poster."));
-      reader.readAsDataURL(blob);
+      img.onload = () => resolve(img);
+      img.onerror = () => reject(new Error("Unable to read the selected image."));
+      img.src = objectUrl;
     });
 
-    if (blob.size <= maxBytes) {
-      return {
-        dataUrl,
-        width,
-        height,
-        bytes: blob.size
-      };
-    }
-  }
+    const maxWidth = 1280;
+    const maxHeight = 720;
+    const scale = Math.min(
+      1,
+      maxWidth / image.naturalWidth,
+      maxHeight / image.naturalHeight
+    );
 
-  throw new Error("The image is still too large after compression. Try a smaller image.");
+    const width = Math.max(1, Math.round(image.naturalWidth * scale));
+    const height = Math.max(1, Math.round(image.naturalHeight * scale));
+
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+
+    const context = canvas.getContext("2d", { alpha: false });
+    if (!context) {
+      throw new Error("Your browser cannot process this image.");
+    }
+
+    context.drawImage(image, 0, 0, width, height);
+
+    // Keep well below Firestore's 1 MiB document limit after base64 overhead.
+    const targetBytes = 380 * 1024;
+    const qualities = [0.78, 0.68, 0.58, 0.48, 0.38, 0.30];
+
+    for (const quality of qualities) {
+      const blob = await new Promise(resolve => {
+        canvas.toBlob(resolve, "image/webp", quality);
+      });
+
+      if (!blob) continue;
+
+      if (blob.size <= targetBytes) {
+        const dataUrl = await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(String(reader.result || ""));
+          reader.onerror = () => reject(new Error("Unable to process the poster."));
+          reader.readAsDataURL(blob);
+        });
+
+        return {
+          dataUrl,
+          width,
+          height,
+          size: blob.size
+        };
+      }
+    }
+
+    throw new Error("Image is too complex to fit safely. Try a smaller poster.");
+  } finally {
+    URL.revokeObjectURL(objectUrl);
+  }
 }
 
 async function uploadPoster() {
   const file = posterFile?.files?.[0];
 
+  setText("#uploadMessage", "Optimizing image…");
+
   const button = $("#uploadPosterButton");
   if (button) button.disabled = true;
 
-  setText("#uploadMessage", "Preparing poster…");
-
   try {
-    const result = await compressPosterFile(file);
+    const optimized = await optimizePoster(file);
 
-    posterUrl.value = result.dataUrl;
-    posterPreview.src = result.dataUrl;
+    posterUrl.value = optimized.dataUrl;
+    posterPreview.src = optimized.dataUrl;
     posterPreview.hidden = false;
 
     setText(
       "#uploadMessage",
-      `Poster ready — ${result.width}×${result.height}, ${Math.round(result.bytes / 1024)} KB.`
+      `Poster ready (${optimized.width}×${optimized.height}, ${Math.round(optimized.size / 1024)} KB).`
     );
   } catch (error) {
     posterUrl.value = "";
@@ -260,8 +264,6 @@ async function uploadPoster() {
 async function savePostForm(event) {
   event.preventDefault();
   setText("#formMessage", "");
-
-  if (manual) posterUrl.value = manual;
   if (!posterUrl.value) return setText("#formMessage", "Choose a poster and click Upload poster first.");
 
   const type = $("#contentType").value;
@@ -333,10 +335,6 @@ function bindControls() {
     posterPreview.src = URL.createObjectURL(file);
     posterPreview.hidden = false;
     setText("#uploadMessage", "Image selected. Click Upload poster.");
-  });
-    const url = event.target.value.trim();
-    posterUrl.value = url;
-    if (url) { posterPreview.src = url; posterPreview.hidden = false; }
   });
   $("#uploadPosterButton")?.addEventListener("click", uploadPoster);
   postForm?.addEventListener("submit", savePostForm);

@@ -8,10 +8,10 @@ import {
   addFavorite,
   removeFavorite,
   trackEvent
-} from "./firebase.js?v=10.3";
+} from "./firebase.js?v=10.1";
 import { normalizeVideoUrl } from "./video-links.js?v=8.0";
 import { escapeHtml } from "./cards.js?v=8.0";
-import { getSessionUser } from "./session.js?v=10.3";
+import { getSessionUser } from "./session.js?v=10.1";
 
 const id = new URLSearchParams(location.search).get("id");
 const message = document.querySelector("#watchMessage");

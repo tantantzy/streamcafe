@@ -1,6 +1,6 @@
-import { listHistory } from "./firebase.js?v=10.3";
+import { listHistory } from "./firebase.js?v=10.1";
 import { escapeHtml } from "./cards.js?v=8.0";
-import { requireUser } from "./session.js?v=10.3";
+import { requireUser } from "./session.js?v=10.1";
 
 const user = await requireUser();
 const grid = document.querySelector("#historyGrid");
