@@ -1,0 +1,14 @@
+StreamCafe logo-integrated build
+
+The new logo has already been installed in this package.
+
+Files added:
+- assets/streamcafe-logo.png
+- assets/favicon.png
+
+The logo is integrated into the public pages and admin header, and the favicon is included on all top-level HTML pages.
+
+GitHub Pages deployment:
+Upload/replace the contents of your existing streamcafe repository with the contents of this ZIP. Keep the same folder structure. No Firebase configuration changes are required just for the logo.
+
+After GitHub Pages deploys, hard-refresh the browser (Ctrl+Shift+R). Browser favicons may remain cached for a while.

@@ -4518,3 +4518,33 @@ body.admin-page {
     font-size: .76rem;
   }
 }
+
+
+/* StreamCafe custom logo integration */
+.brand-logo-img {
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+  display: block;
+  object-fit: cover;
+  border-radius: 10px;
+}
+.brand .brand-name {
+  width: auto !important;
+  height: auto !important;
+  display: inline !important;
+  border-radius: 0 !important;
+  background: none !important;
+}
+.admin-exact-logo-img {
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
+  display: block;
+  object-fit: cover;
+  border-radius: 9px;
+}
+@media (max-width: 640px) {
+  .brand-logo-img { width: 34px; height: 34px; flex-basis: 34px; }
+  .admin-exact-logo-img { width: 32px; height: 32px; flex-basis: 32px; }
+}
