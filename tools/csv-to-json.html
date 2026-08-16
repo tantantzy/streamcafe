@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>StreamCafe CSV to JSON</title>
+<style>body{font-family:system-ui;background:#101218;color:#fff;padding:30px}main{max-width:900px;margin:auto}textarea{width:100%;min-height:250px;box-sizing:border-box;margin:10px 0;background:#0d1016;color:#fff;border:1px solid #3a404b;padding:12px}button{padding:10px 15px}</style></head>
+<body><main><h1>CSV → JSON converter</h1><p>Paste the CSV exported from Supabase Table Editor.</p><textarea id="csv"></textarea><button id="convert">Convert</button><textarea id="json" readonly></textarea>
+<script>
+function parseCSV(text){
+  const rows=[]; let row=[],cell="",quote=false;
+  for(let i=0;i<text.length;i++){
+    const ch=text[i], next=text[i+1];
+    if(ch==='"'){
+      if(quote && next==='"'){cell+='"';i++;} else quote=!quote;
+    } else if(ch===',' && !quote){row.push(cell);cell="";}
+    else if((ch==='\n'||ch==='\r') && !quote){
+      if(ch==='\r'&&next==='\n')i++;
+      row.push(cell);cell="";
+      if(row.some(v=>v!==""))rows.push(row);
+      row=[];
+    } else cell+=ch;
+  }
+  if(cell||row.length){row.push(cell);rows.push(row);}
+  return rows;
+}
+document.querySelector("#convert").onclick=()=>{
+  const rows=parseCSV(document.querySelector("#csv").value);
+  if(rows.length<2)return;
+  const headers=rows[0].map(h=>h.trim());
+  const data=rows.slice(1).map(r=>Object.fromEntries(headers.map((h,i)=>[h,r[i]??""])));
+  document.querySelector("#json").value=JSON.stringify(data,null,2);
+};
+</script></main></body></html>

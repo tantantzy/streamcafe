@@ -1,0 +1,73 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function profilePath(uid) {
+      return /databases/$(database)/documents/user_profiles/$(uid);
+    }
+
+    function isAdmin() {
+      return signedIn()
+        && exists(profilePath(request.auth.uid))
+        && get(profilePath(request.auth.uid)).data.role == "admin";
+    }
+
+    match /video_posts/{postId} {
+      allow get: if resource.data.published == true || isAdmin();
+      allow list: if isAdmin() || resource.data.published == true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /user_profiles/{uid} {
+      allow read: if signedIn() && (request.auth.uid == uid || isAdmin());
+
+      allow create: if signedIn()
+        && request.auth.uid == uid
+        && request.resource.data.user_id == request.auth.uid
+        && request.resource.data.role == "user";
+
+      allow update: if isAdmin()
+        || (
+          signedIn()
+          && request.auth.uid == uid
+          && request.resource.data.user_id == resource.data.user_id
+          && request.resource.data.role == resource.data.role
+        );
+
+      allow delete: if isAdmin();
+    }
+
+    match /user_favorites/{favoriteId} {
+      allow read, create, update, delete: if signedIn()
+        && (
+          resource == null
+            ? request.resource.data.user_id == request.auth.uid
+            : resource.data.user_id == request.auth.uid
+        );
+    }
+
+    match /watch_history/{historyId} {
+      allow read, create, update, delete: if signedIn()
+        && (
+          resource == null
+            ? request.resource.data.user_id == request.auth.uid
+            : resource.data.user_id == request.auth.uid
+        );
+    }
+
+    match /video_analytics/{eventId} {
+      allow create: if
+        request.resource.data.event_type is string
+        && (
+          (request.auth == null && request.resource.data.user_id == null)
+          || (request.auth != null && request.resource.data.user_id == request.auth.uid)
+        );
+      allow read, update, delete: if isAdmin();
+    }
+  }
+}

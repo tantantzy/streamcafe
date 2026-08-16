@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Watch — StreamCafe</title>
+  <link rel="stylesheet" href="./assets/styles.css?v=8.3.1">
+</head>
+<body class="watch-page">
+<header class="header reference-header">
+  <a class="brand" href="./index.html"><span>▶</span> StreamCafe</a>
+
+  <nav class="main-nav reference-nav">
+    <a href="./index.html">⌂ <span>Home</span></a>
+    <a href="./series.html">▣ <span>Series</span></a>
+    <a href="./movies.html">▶ <span>Movies</span></a>
+    <a href="./search.html">⌕ <span>Search</span></a>
+      <a data-account-link href="./auth.html">Sign in</a>
+  </nav>
+</header>
+
+<main class="reference-watch-main">
+  <p id="watchMessage" class="message watch-loading-message">Loading video…</p>
+
+  <section id="watchContent" class="reference-watch-layout" hidden>
+    <section class="reference-player-column">
+      <div class="reference-player-shell">
+        <video id="videoPlayer" controls playsinline preload="metadata" hidden></video>
+
+        <iframe
+          id="drivePlayer"
+          title="Google Drive player"
+          allow="autoplay; fullscreen"
+          allowfullscreen
+          hidden>
+        </iframe>
+
+        <div id="playerLoading" class="player-state">
+          <div class="spinner"></div>
+          <p>Loading video…</p>
+        </div>
+
+        <div id="playerError" class="player-state" hidden>
+          <p>This source cannot be played inside the website.</p>
+          <a id="openExternalButton" class="button" href="#" target="_blank" rel="noopener">
+            Open video source
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <aside class="reference-info-panel">
+<div class="reference-title-row">
+        <div>
+          <h1 id="watchTitle"></h1>
+          <p id="watchDate" class="reference-date"></p>
+        </div>
+        <span id="watchEpisodeBadge" class="watch-episode-badge" hidden></span>
+      </div>
+<div class="reference-actions">
+        <button id="favoriteButton" class="reference-action watch-action-card">
+          <span class="reference-action-icon">♡</span>
+          <small>Favorite</small>
+        </button>
+
+        <button id="shareButton" class="reference-action watch-action-card">
+          <span class="reference-action-icon">⌯</span>
+          <small>Share</small>
+        </button>
+
+        <a id="downloadButton" class="reference-action watch-action-card" href="#" target="_blank" rel="noopener">
+          <span class="reference-action-icon">⇩</span>
+          <small>Open video</small>
+        </a>
+
+        <button id="reportButton" class="reference-action watch-action-card">
+          <span class="reference-action-icon">!</span>
+          <small>Report</small>
+        </button>
+      </div>
+
+      <p class="reference-note">
+        Video availability depends on the external video provider.
+      </p>
+
+      <details class="reference-description">
+        <summary>Description</summary>
+        <p id="watchDescription"></p>
+      </details>
+
+      <section id="episodesSection" class="reference-episodes" hidden>
+        <div class="reference-episode-heading">
+          <div>
+            <p class="eyebrow">CONTINUE THE STORY</p>
+            <h2>Episode</h2>
+          </div>
+          <span id="episodeTotal"></span>
+        </div>
+
+        <div id="episodesGrid" class="reference-episode-grid"></div>
+      </section>
+    </aside>
+  </section>
+</main>
+<div id="toast" class="site-toast" aria-live="polite"></div>
+
+<footer class="site-footer">
+  <nav class="footer-links" aria-label="Footer navigation">
+    <a href="./privacy.html">Privacy Policy</a>
+    <span aria-hidden="true">•</span>
+    <a href="./terms.html">Terms</a>
+    <span aria-hidden="true">•</span>
+    <a href="./contact.html">Contact</a>
+  </nav>
+
+  <p class="footer-copyright">© 2026 StreamCafe</p>
+  <p class="developer-credit">Developed by <strong>TanTanTzy</strong></p>
+</footer>
+
+<script>
+  window.addEventListener("error", function (event) {
+    const message = document.querySelector("#watchMessage");
+    if (message && message.textContent.includes("Loading")) {
+      message.textContent = "Unable to start the video page: " +
+        (event.message || "JavaScript failed to load.");
+    }
+  });
+
+  window.addEventListener("unhandledrejection", function (event) {
+    const message = document.querySelector("#watchMessage");
+    const reason = event.reason;
+    if (message && message.textContent.includes("Loading")) {
+      message.textContent = "Unable to load the video: " +
+        (reason?.message || String(reason || "Unknown error"));
+    }
+  });
+</script>
+<script type="module" src="./assets/watch.js?v=10.0"></script>
+<noscript>This page requires JavaScript to load videos.</noscript>
+<script type="module" src="./assets/session.js?v=10.0"></script>
+<script type="module" src="./assets/mobile-nav.js?v=8.3.1"></script>
+</body>
+</html>

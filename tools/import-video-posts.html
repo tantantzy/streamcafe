@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>StreamCafe Firestore Content Importer</title>
+<style>
+body{font-family:system-ui;background:#101218;color:#fff;margin:0;padding:30px}
+main{max-width:900px;margin:auto}.card{background:#1a1d24;padding:22px;border-radius:12px;border:1px solid #30343d}
+textarea{width:100%;min-height:260px;box-sizing:border-box;background:#0e1117;color:#fff;border:1px solid #3b414d;border-radius:8px;padding:12px}
+button{padding:10px 16px;border:0;border-radius:8px;font-weight:700;cursor:pointer}.message{color:#b9c0ce}
+code{color:#ba9cff}
+</style>
+</head>
+<body>
+<main>
+<h1>StreamCafe Firestore Importer</h1>
+<div class="card">
+<p>Sign in as the Firebase administrator in StreamCafe first, then open this page from the same domain.</p>
+<p>Paste a JSON array exported/converted from your old <code>video_posts</code> table.</p>
+<textarea id="jsonInput" placeholder='[{"id":"...","title":"...","published":true}]'></textarea>
+<p><button id="importButton">Import video posts</button></p>
+<p id="message" class="message"></p>
+</div>
+</main>
+<script type="module">
+import { isConfigured, waitForAuth, isAdmin, savePost } from "../assets/firebase.js?v=10.0";
+
+const input = document.querySelector("#jsonInput");
+const message = document.querySelector("#message");
+const button = document.querySelector("#importButton");
+
+button.addEventListener("click", async () => {
+  if (!isConfigured) return message.textContent = "Firebase is not configured.";
+  const user = await waitForAuth();
+  if (!user || !(await isAdmin(user))) return message.textContent = "Sign in as an administrator first.";
+
+  let rows;
+  try {
+    rows = JSON.parse(input.value);
+    if (!Array.isArray(rows)) throw new Error("The JSON must be an array.");
+  } catch (error) {
+    return message.textContent = error.message;
+  }
+
+  button.disabled = true;
+  let imported = 0;
+  try {
+    for (const row of rows) {
+      const id = String(row.id || "").trim();
+      const payload = {
+        content_type: row.content_type || "movie",
+        category: row.category || "Video",
+        title: row.title || "Untitled",
+        description: row.description || "",
+        release_year: row.release_year ? Number(row.release_year) : null,
+        featured: row.featured === true || row.featured === "true",
+        series_title: row.series_title || null,
+        season_number: row.season_number ? Number(row.season_number) : null,
+        episode_number: row.episode_number ? Number(row.episode_number) : null,
+        poster_url: row.poster_url || "",
+        video_url: row.video_url || "",
+        published: row.published === true || row.published === "true",
+        created_at: row.created_at || new Date().toISOString()
+      };
+      await savePost(payload, id);
+      imported++;
+      message.textContent = `Imported ${imported} of ${rows.length}…`;
+    }
+    message.textContent = `Done. Imported ${imported} video posts.`;
+  } catch (error) {
+    message.textContent = `Stopped after ${imported}: ${error.message}`;
+  } finally {
+    button.disabled = false;
+  }
+});
+</script>
+</body>
+</html>
