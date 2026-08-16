@@ -1,5 +1,5 @@
-import { isConfigured, listPublishedPosts, trackEvent } from "./firebase.js?v=10.0";
-import { getSessionUser } from "./session.js?v=10.0";
+import { isConfigured, listPublishedPosts, trackEvent } from "./firebase.js?v=10.2";
+import { getSessionUser } from "./session.js?v=10.2";
 import { card } from "./cards.js?v=8.0";
 
 const searchInput = document.querySelector("#searchInput") || document.querySelector('input[type="search"]') || document.querySelector('input[type="text"]');

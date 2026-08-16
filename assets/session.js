@@ -1,4 +1,4 @@
-import { auth, isConfigured, waitForAuth, getProfile as firebaseGetProfile } from "./firebase.js?v=10.0";
+import { auth, isConfigured, waitForAuth, getProfile as firebaseGetProfile } from "./firebase.js?v=10.2";
 
 export async function getSessionUser() {
   if (!isConfigured) return null;
@@ -35,9 +35,18 @@ export async function renderAccountNavigation() {
 
 export function safeReturnUrl(raw) {
   if (!raw) return "./index.html";
+
   try {
-    const url = new URL(raw, location.origin);
-    if (url.origin !== location.origin) return "./index.html";
+    // Resolve ./admin.html from the current project folder.
+    // On GitHub Pages:
+    // /streamcafe/auth.html -> /streamcafe/admin.html
+    const base = new URL("./", location.href);
+    const url = new URL(raw, base);
+
+    if (url.origin !== location.origin) {
+      return "./index.html";
+    }
+
     return `${url.pathname}${url.search}${url.hash}`;
   } catch {
     return "./index.html";

@@ -4518,3 +4518,21 @@ body.admin-page {
     font-size: .76rem;
   }
 }
+
+
+/* Firebase poster upload v10.2 */
+#uploadPosterButton:disabled {
+  opacity: .65;
+  cursor: wait;
+}
+
+#uploadMessage {
+  line-height: 1.45;
+}
+
+.admin-exact-sidebar-card #posterPreview {
+  width: 100%;
+  max-height: 220px;
+  object-fit: cover;
+  border-radius: 8px;
+}

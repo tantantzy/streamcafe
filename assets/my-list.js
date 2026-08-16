@@ -1,6 +1,6 @@
-import { listFavorites } from "./firebase.js?v=10.0";
+import { listFavorites } from "./firebase.js?v=10.2";
 import { card } from "./cards.js?v=8.0";
-import { requireUser } from "./session.js?v=10.0";
+import { requireUser } from "./session.js?v=10.2";
 
 const user = await requireUser();
 const grid = document.querySelector("#myListGrid");

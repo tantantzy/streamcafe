@@ -18,10 +18,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 
 import {
-  FIREBASE_CONFIG,
-  CLOUDINARY_CLOUD_NAME,
-  CLOUDINARY_UPLOAD_PRESET
-} from "./firebase-config.js";
+  FIREBASE_CONFIG} from "./firebase-config.js";
 
 export const isConfigured = Boolean(
   FIREBASE_CONFIG?.apiKey &&
@@ -30,10 +27,6 @@ export const isConfigured = Boolean(
   !String(FIREBASE_CONFIG.projectId).includes("YOUR_")
 );
 
-export const cloudinaryConfigured = Boolean(
-  CLOUDINARY_CLOUD_NAME &&
-  CLOUDINARY_UPLOAD_PRESET
-);
 
 export const app = isConfigured ? initializeApp(FIREBASE_CONFIG) : null;
 export const auth = isConfigured ? getAuth(app) : null;
@@ -268,22 +261,3 @@ export async function adminAnalytics() {
   };
 }
 
-export async function uploadPosterToCloudinary(file) {
-  if (!cloudinaryConfigured) {
-    throw new Error("Cloudinary is not configured. Paste a poster URL instead.");
-  }
-  const body = new FormData();
-  body.append("file", file);
-  body.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
-  body.append("folder", "streamcafe-posters");
-
-  const response = await fetch(
-    `https://api.cloudinary.com/v1_1/${encodeURIComponent(CLOUDINARY_CLOUD_NAME)}/image/upload`,
-    { method: "POST", body }
-  );
-  const result = await response.json();
-  if (!response.ok) {
-    throw new Error(result?.error?.message || "Poster upload failed.");
-  }
-  return result.secure_url;
-}
