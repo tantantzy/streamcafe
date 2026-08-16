@@ -4520,19 +4520,20 @@ body.admin-page {
 }
 
 
-/* Firebase poster upload v10.2 */
+/* StreamCafe Firebase poster upload fix v10.3 */
 #uploadPosterButton:disabled {
-  opacity: .65;
+  opacity: .55;
   cursor: wait;
 }
 
 #uploadMessage {
-  line-height: 1.45;
+  min-height: 1.25rem;
+  line-height: 1.4;
 }
 
-.admin-exact-sidebar-card #posterPreview {
+#posterPreview {
   width: 100%;
-  max-height: 220px;
+  max-height: 230px;
   object-fit: cover;
   border-radius: 8px;
 }

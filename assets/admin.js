@@ -6,9 +6,8 @@ import {
   listAllPosts,
   savePost,
   removePost,
-  adminAnalytics,
-  uploadPosterToCloudinary
-} from "./firebase.js?v=10.2";
+  adminAnalytics
+} from "./firebase.js?v=10.1";
 import { signOut } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
 
 const $ = selector => document.querySelector(selector);
@@ -123,7 +122,6 @@ function editPost(id) {
   $("#seasonNumber").value = post.season_number || "";
   $("#episodeNumber").value = post.episode_number || "";
   posterUrl.value = post.poster_url || "";
-  if ($("#posterManualUrl")) $("#posterManualUrl").value = post.poster_url || "";
   posterPreview.src = post.poster_url || "";
   posterPreview.hidden = !post.poster_url;
   $("#videoUrl").value = post.video_url || "";
@@ -137,7 +135,6 @@ function resetForm() {
   postForm.reset();
   $("#postId").value = "";
   posterUrl.value = "";
-  if ($("#posterManualUrl")) $("#posterManualUrl").value = "";
   posterPreview.removeAttribute("src");
   posterPreview.hidden = true;
   $("#cancelEditButton").hidden = true;
@@ -157,30 +154,115 @@ async function deletePost(id) {
     setText("#postsMessage", error.message);
   }
 }
+
+async function compressPosterFile(file) {
+  if (!file) throw new Error("Choose an image first.");
+
+  if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+    throw new Error("Please choose a JPG, PNG, or WebP image.");
+  }
+
+  if (file.size > 10 * 1024 * 1024) {
+    throw new Error("Please choose an image smaller than 10 MB.");
+  }
+
+  const image = await new Promise((resolve, reject) => {
+    const img = new Image();
+    const objectUrl = URL.createObjectURL(file);
+
+    img.onload = () => {
+      URL.revokeObjectURL(objectUrl);
+      resolve(img);
+    };
+
+    img.onerror = () => {
+      URL.revokeObjectURL(objectUrl);
+      reject(new Error("Unable to read the selected image."));
+    };
+
+    img.src = objectUrl;
+  });
+
+  const maxWidth = 1280;
+  const maxHeight = 720;
+  const scale = Math.min(
+    1,
+    maxWidth / image.naturalWidth,
+    maxHeight / image.naturalHeight
+  );
+
+  const width = Math.max(1, Math.round(image.naturalWidth * scale));
+  const height = Math.max(1, Math.round(image.naturalHeight * scale));
+
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+
+  const context = canvas.getContext("2d", { alpha: false });
+  context.drawImage(image, 0, 0, width, height);
+
+  const qualities = [0.78, 0.68, 0.58, 0.48, 0.38];
+  const maxBytes = 650 * 1024;
+
+  for (const quality of qualities) {
+    const blob = await new Promise(resolve =>
+      canvas.toBlob(resolve, "image/webp", quality)
+    );
+
+    if (!blob) continue;
+
+    const dataUrl = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = () => reject(new Error("Unable to process the poster."));
+      reader.readAsDataURL(blob);
+    });
+
+    if (blob.size <= maxBytes) {
+      return {
+        dataUrl,
+        width,
+        height,
+        bytes: blob.size
+      };
+    }
+  }
+
+  throw new Error("The image is still too large after compression. Try a smaller image.");
+}
+
 async function uploadPoster() {
   const file = posterFile?.files?.[0];
-  if (!file) return setText("#uploadMessage", "Choose an image first.");
-  if (file.size > 5 * 1024 * 1024) return setText("#uploadMessage", "Maximum size is 5 MB.");
-  if (!["image/jpeg","image/png","image/webp"].includes(file.type)) return setText("#uploadMessage", "Use JPG, PNG, or WebP.");
-  setText("#uploadMessage", "Uploading…");
+
+  const button = $("#uploadPosterButton");
+  if (button) button.disabled = true;
+
+  setText("#uploadMessage", "Preparing poster…");
+
   try {
-    const url = await uploadPosterToCloudinary(file);
-    posterUrl.value = url;
-    if ($("#posterManualUrl")) $("#posterManualUrl").value = url;
-    posterPreview.src = url;
+    const result = await compressPosterFile(file);
+
+    posterUrl.value = result.dataUrl;
+    posterPreview.src = result.dataUrl;
     posterPreview.hidden = false;
-    setText("#uploadMessage", "Poster uploaded.");
+
+    setText(
+      "#uploadMessage",
+      `Poster ready — ${result.width}×${result.height}, ${Math.round(result.bytes / 1024)} KB.`
+    );
   } catch (error) {
+    posterUrl.value = "";
     setText("#uploadMessage", error.message);
+  } finally {
+    if (button) button.disabled = false;
   }
 }
 async function savePostForm(event) {
   event.preventDefault();
   setText("#formMessage", "");
 
-  const manual = $("#posterManualUrl")?.value.trim();
   if (manual) posterUrl.value = manual;
-  if (!posterUrl.value) return setText("#formMessage", "Upload a poster or paste a poster URL first.");
+  if (!posterUrl.value) return setText("#formMessage", "Choose a poster and click Upload poster first.");
 
   const type = $("#contentType").value;
   if (type === "series" && !$("#seriesTitle").value.trim()) return setText("#formMessage", "Enter a series title.");
@@ -239,11 +321,19 @@ function bindControls() {
   $("#contentType")?.addEventListener("change", toggleSeriesFields);
   posterFile?.addEventListener("change", () => {
     const file = posterFile.files?.[0];
-    if (!file) return;
+
+    posterUrl.value = "";
+
+    if (!file) {
+      posterPreview.hidden = true;
+      setText("#uploadMessage", "");
+      return;
+    }
+
     posterPreview.src = URL.createObjectURL(file);
     posterPreview.hidden = false;
+    setText("#uploadMessage", "Image selected. Click Upload poster.");
   });
-  $("#posterManualUrl")?.addEventListener("input", event => {
     const url = event.target.value.trim();
     posterUrl.value = url;
     if (url) { posterPreview.src = url; posterPreview.hidden = false; }

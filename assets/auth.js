@@ -1,11 +1,11 @@
-import { auth, isConfigured, saveProfile, waitForAuth } from "./firebase.js?v=10.2";
+import { auth, isConfigured, saveProfile, waitForAuth } from "./firebase.js?v=10.3";
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   sendEmailVerification,
   sendPasswordResetEmail
 } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
-import { safeReturnUrl } from "./session.js?v=10.2";
+import { safeReturnUrl } from "./session.js?v=10.3";
 
 const $ = selector => document.querySelector(selector);
 const message = $("#authMessage");

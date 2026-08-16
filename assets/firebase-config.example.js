@@ -7,3 +7,7 @@ export const FIREBASE_CONFIG = {
   appId: "YOUR_APP_ID"
 };
 
+// Optional poster uploads via Cloudinary.
+// Leave these blank if you prefer to paste poster URLs manually.
+export const CLOUDINARY_CLOUD_NAME = "";
+export const CLOUDINARY_UPLOAD_PRESET = "";

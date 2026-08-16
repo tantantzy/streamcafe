@@ -1,4 +1,4 @@
-import { auth, isConfigured, waitForAuth, getProfile as firebaseGetProfile } from "./firebase.js?v=10.2";
+import { auth, isConfigured, waitForAuth, getProfile as firebaseGetProfile } from "./firebase.js?v=10.3";
 
 export async function getSessionUser() {
   if (!isConfigured) return null;

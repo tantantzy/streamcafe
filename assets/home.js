@@ -1,6 +1,6 @@
-import { isConfigured, listPublishedPosts, listHistory } from "./firebase.js?v=10.2";
+import { isConfigured, listPublishedPosts, listHistory } from "./firebase.js?v=10.3";
 import { card, escapeHtml } from "./cards.js?v=8.0";
-import { getSessionUser } from "./session.js?v=10.2";
+import { getSessionUser } from "./session.js?v=10.3";
 
 const latestGrid = document.querySelector("#latestGrid");
 const seriesGrid = document.querySelector("#seriesGrid");
