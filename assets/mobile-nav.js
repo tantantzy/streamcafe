@@ -1,76 +1,64 @@
-const MOBILE_BREAKPOINT = 760;
+document.addEventListener("DOMContentLoaded", () => {
+  const header = document.querySelector("header.header, header.reference-header");
+  if (!header) return;
 
-function initializeMobileNavigation() {
-  const header = document.querySelector(".header, .reference-header");
-  const nav = header?.querySelector(".main-nav, .reference-nav");
+  // 1. Ensure mobile elements exist in DOM
+  let nav = header.querySelector("nav");
+  if (nav && !nav.classList.contains("mobile-navigation-panel")) {
+    nav.classList.add("mobile-navigation-panel");
+  }
 
-  if (!header || !nav || header.querySelector(".mobile-menu-button")) return;
+  let menuButton = header.querySelector(".mobile-menu-button");
+  if (!menuButton) {
+    menuButton = document.createElement("button");
+    menuButton.className = "mobile-menu-button";
+    menuButton.setAttribute("aria-label", "Toggle navigation menu");
+    menuButton.innerHTML = "<span></span><span></span><span></span>";
+    header.appendChild(menuButton);
+  }
 
-  const button = document.createElement("button");
-  button.type = "button";
-  button.className = "mobile-menu-button";
-  button.setAttribute("aria-label", "Open navigation menu");
-  button.setAttribute("aria-expanded", "false");
-  button.innerHTML = `
-    <span></span>
-    <span></span>
-    <span></span>
-  `;
+  let overlay = document.querySelector(".mobile-menu-overlay");
+  if (!overlay) {
+    overlay = document.createElement("button");
+    overlay.className = "mobile-menu-overlay";
+    overlay.setAttribute("aria-label", "Close navigation menu");
+    document.body.appendChild(overlay);
+  }
 
-  const overlay = document.createElement("button");
-  overlay.type = "button";
-  overlay.className = "mobile-menu-overlay";
-  overlay.setAttribute("aria-label", "Close navigation menu");
-
-  header.appendChild(button);
-  document.body.appendChild(overlay);
-  nav.classList.add("mobile-navigation-panel");
+  // 2. Toggle Functions
+  const openMenu = () => {
+    document.body.classList.add("mobile-menu-open");
+    menuButton.setAttribute("aria-expanded", "true");
+  };
 
   const closeMenu = () => {
     document.body.classList.remove("mobile-menu-open");
-    button.setAttribute("aria-expanded", "false");
-    button.setAttribute("aria-label", "Open navigation menu");
+    menuButton.setAttribute("aria-expanded", "false");
   };
 
-  const openMenu = () => {
-    document.body.classList.add("mobile-menu-open");
-    button.setAttribute("aria-expanded", "true");
-    button.setAttribute("aria-label", "Close navigation menu");
+  const toggleMenu = () => {
+    if (document.body.classList.contains("mobile-menu-open")) {
+      closeMenu();
+    } else {
+      openMenu();
+    }
   };
 
-  button.addEventListener("click", () => {
-    document.body.classList.contains("mobile-menu-open")
-      ? closeMenu()
-      : openMenu();
-  });
-
+  // 3. Event Listeners
+  menuButton.addEventListener("click", toggleMenu);
   overlay.addEventListener("click", closeMenu);
 
-  nav.addEventListener("click", event => {
-    const link = event.target.closest("a");
-    if (!link) return;
+  // Close menu when clicking links inside nav
+  if (nav) {
+    nav.querySelectorAll("a").forEach((link) => {
+      link.addEventListener("click", closeMenu);
+    });
+  }
 
-    event.stopPropagation();
-    closeMenu();
-
-    // Let normal navigation continue. This timeout avoids some mobile
-    // browsers swallowing the click while the drawer is closing.
-    const destination = link.href;
-    if (destination) {
-      event.preventDefault();
-      window.setTimeout(() => {
-        window.location.href = destination;
-      }, 60);
+  // Close menu on Escape key press
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && document.body.classList.contains("mobile-menu-open")) {
+      closeMenu();
     }
   });
-
-  document.addEventListener("keydown", event => {
-    if (event.key === "Escape") closeMenu();
-  });
-
-  window.addEventListener("resize", () => {
-    if (window.innerWidth > MOBILE_BREAKPOINT) closeMenu();
-  });
-}
-
-initializeMobileNavigation();
+});
