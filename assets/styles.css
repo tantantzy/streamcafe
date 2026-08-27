@@ -4548,3 +4548,23 @@ body.admin-page {
   .brand-logo-img { width: 34px; height: 34px; flex-basis: 34px; }
   .admin-exact-logo-img { width: 32px; height: 32px; flex-basis: 32px; }
 }
+/* Ensure video container stacks elements correctly */
+.player-container,
+.video-player-wrapper {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+/* Ensure iframe or video element stays on top */
+.player-container iframe,
+.player-container video {
+  order: 1 !important;
+  width: 100%;
+}
+
+/* Push progress bar / control panel below the video */
+.player-container .progress-bar,
+.player-container .player-controls,
+.player-container .video-length-bar {
+  order: 2 !important;
+}
