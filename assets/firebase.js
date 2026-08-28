@@ -91,10 +91,43 @@ export async function isAdmin(user = null) {
   return profile?.role === "admin";
 }
 
-export async function listPublishedPosts() {
+const PUBLISHED_CACHE_KEY = "streamcafe:published-posts:v1";
+const PUBLISHED_CACHE_TTL = 60 * 1000;
+
+function readPublishedCache() {
+  try {
+    const raw = sessionStorage.getItem(PUBLISHED_CACHE_KEY);
+    if (!raw) return null;
+    const cached = JSON.parse(raw);
+    if (!cached || Date.now() - Number(cached.timestamp || 0) > PUBLISHED_CACHE_TTL) return null;
+    return Array.isArray(cached.posts) ? cached.posts : null;
+  } catch {
+    return null;
+  }
+}
+
+function writePublishedCache(posts) {
+  try {
+    sessionStorage.setItem(PUBLISHED_CACHE_KEY, JSON.stringify({
+      timestamp: Date.now(),
+      posts
+    }));
+  } catch {
+    // Storage can be disabled/full; browsing still works without the cache.
+  }
+}
+
+export async function listPublishedPosts({ forceRefresh = false } = {}) {
+  if (!forceRefresh) {
+    const cached = readPublishedCache();
+    if (cached) return cached;
+  }
+
   const q = query(collection(db, "video_posts"), where("published", "==", true));
   const snap = await getDocs(q);
-  return sortNewest(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+  const posts = sortNewest(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+  writePublishedCache(posts);
+  return posts;
 }
 
 export async function listAllPosts() {

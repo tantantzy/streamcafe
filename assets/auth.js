@@ -1,4 +1,4 @@
-import { auth, isConfigured, saveProfile, waitForAuth } from "./firebase.js?v=10.1";
+import { auth, isConfigured, saveProfile, waitForAuth } from "./firebase.js?v=10.2";
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,

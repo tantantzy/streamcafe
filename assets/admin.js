@@ -7,7 +7,7 @@ import {
   savePost,
   removePost,
   adminAnalytics
-} from "./firebase.js?v=10.1";
+} from "./firebase.js?v=10.2";
 import { signOut } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
 
 const $ = selector => document.querySelector(selector);

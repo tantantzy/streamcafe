@@ -4548,16 +4548,116 @@ body.admin-page {
   .brand-logo-img { width: 34px; height: 34px; flex-basis: 34px; }
   .admin-exact-logo-img { width: 32px; height: 32px; flex-basis: 32px; }
 }
-@media (max-width: 768px) {
-  /* ... your existing mobile styles ... */
 
-  .featured-slide .featured-copy h1 {
-    max-width: 92%;
-    margin: 8px 0 16px;
-    font-size: clamp(2rem, 7vw, 3.2rem);
+
+/* =========================================================
+   StreamCafe v8.4 — faster desktop browsing + bottom progress
+   ========================================================= */
+html {
+  scroll-behavior: smooth;
+}
+
+.video-card {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 250px;
+}
+
+.poster img {
+  display: block;
+}
+
+.catalog-expanded .video-grid,
+.search-results-section .video-grid {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 18px;
+}
+
+@media (min-width: 1500px) {
+  .catalog-expanded .video-grid,
+  .search-results-section .video-grid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 20px;
+  }
+}
+
+@media (min-width: 901px) {
+  .header {
+    height: 66px;
+    min-height: 66px;
+    padding-left: 3vw;
+    padding-right: 3vw;
   }
 
-  .featured-dots {
-    bottom: 18px;
+  .reference-watch-main,
+  .reference-watch-layout,
+  .reference-player-column,
+  .reference-info-panel {
+    height: calc(100vh - 66px);
+  }
+
+  .reference-watch-layout {
+    grid-template-columns: minmax(0, 70%) minmax(340px, 30%);
+  }
+
+  .reference-info-panel {
+    padding: 22px 20px 30px;
+  }
+
+  .catalog-page-main {
+    padding-left: 3vw;
+    padding-right: 3vw;
+  }
+
+  .section-heading {
+    position: sticky;
+    top: 66px;
+    z-index: 8;
+    margin: 0 -3vw 22px;
+    padding: 13px 3vw;
+    background: rgba(17,19,24,.92);
+    border-bottom: 1px solid rgba(255,255,255,.06);
+    backdrop-filter: blur(14px);
+  }
+}
+
+.watch-progress {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 8;
+  height: 4px;
+  background: rgba(255,255,255,.16);
+  pointer-events: none;
+}
+
+.watch-progress span {
+  display: block;
+  width: 0;
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  box-shadow: 0 0 10px rgba(123,87,244,.45);
+  transition: width .12s linear;
+}
+
+@media (max-width: 900px) {
+  .catalog-expanded .video-grid,
+  .search-results-section .video-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 650px) {
+  .catalog-expanded .video-grid,
+  .search-results-section .video-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 13px;
+  }
+}
+
+@media (max-width: 430px) {
+  .catalog-expanded .video-grid,
+  .search-results-section .video-grid {
+    grid-template-columns: 1fr;
   }
 }

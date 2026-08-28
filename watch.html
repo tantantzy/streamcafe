@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Watch — StreamCafe</title>
-  <link rel="stylesheet" href="./assets/styles.css?v=8.3.1">
+  <link rel="stylesheet" href="./assets/styles.css?v=8.4.0">
   <link rel="icon" type="image/png" href="./assets/favicon.png">
 </head>
 <body class="watch-page">
@@ -27,6 +27,9 @@
     <section class="reference-player-column">
       <div class="reference-player-shell">
         <video id="videoPlayer" controls playsinline preload="metadata" hidden></video>
+        <div id="watchProgress" class="watch-progress" hidden aria-hidden="true">
+          <span id="watchProgressBar"></span>
+        </div>
 
         <iframe
           id="drivePlayer"
@@ -136,7 +139,7 @@
     }
   });
 </script>
-<script type="module" src="./assets/watch.js?v=10.1"></script>
+<script type="module" src="./assets/watch.js?v=10.2"></script>
 <noscript>This page requires JavaScript to load videos.</noscript>
 <script type="module" src="./assets/session.js?v=10.1"></script>
 <script type="module" src="./assets/mobile-nav.js?v=8.3.1"></script>

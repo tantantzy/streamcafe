@@ -8,9 +8,9 @@ import {
   addFavorite,
   removeFavorite,
   trackEvent
-} from "./firebase.js?v=10.1";
-import { normalizeVideoUrl } from "./video-links.js?v=8.0";
-import { escapeHtml } from "./cards.js?v=8.0";
+} from "./firebase.js?v=10.2";
+import { normalizeVideoUrl } from "./video-links.js?v=8.1";
+import { escapeHtml } from "./cards.js?v=8.1";
 import { getSessionUser } from "./session.js?v=10.1";
 
 const id = new URLSearchParams(location.search).get("id");
@@ -22,10 +22,20 @@ const loading = document.querySelector("#playerLoading");
 const errorState = document.querySelector("#playerError");
 const externalButton = document.querySelector("#openExternalButton");
 const toast = document.querySelector("#toast");
+const watchProgress = document.querySelector("#watchProgress");
+const watchProgressBar = document.querySelector("#watchProgressBar");
 
 let currentPost = null;
 let currentUser = null;
 let progressTimer = null;
+
+function updateWatchProgress() {
+  if (!watchProgress || !watchProgressBar || videoPlayer.hidden) return;
+  const duration = Number(videoPlayer.duration || 0);
+  const current = Number(videoPlayer.currentTime || 0);
+  const percent = duration > 0 ? Math.min(100, Math.max(0, (current / duration) * 100)) : 0;
+  watchProgressBar.style.width = `${percent}%`;
+}
 
 function showToast(text) {
   toast.textContent = text;
@@ -60,6 +70,8 @@ async function setupPlayer(post) {
   drivePlayer.hidden = true;
   loading.hidden = false;
   errorState.hidden = true;
+  watchProgress.hidden = source.type !== "direct";
+  if (watchProgressBar) watchProgressBar.style.width = "0%";
   externalButton.href = source.externalUrl;
   document.querySelector("#downloadButton").href = source.externalUrl;
 
@@ -90,6 +102,8 @@ async function setupPlayer(post) {
     }
   }, { once: true });
 
+  videoPlayer.addEventListener("timeupdate", updateWatchProgress);
+  videoPlayer.addEventListener("loadedmetadata", updateWatchProgress);
   videoPlayer.addEventListener("play", async () => {
     loading.hidden = true;
     await recordHistoryVisit();
@@ -103,6 +117,7 @@ async function setupPlayer(post) {
     saveProgress(true);
   });
   videoPlayer.addEventListener("ended", () => {
+    updateWatchProgress();
     clearInterval(progressTimer);
     saveProgress(true);
     trackEvent("complete", { postId: post.id, userId: currentUser?.uid || null });

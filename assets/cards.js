@@ -12,7 +12,7 @@ export function card(post) {
   return `
     <a class="video-card" href="./watch.html?id=${encodeURIComponent(post.id)}">
       <div class="poster">
-        <img src="${escapeHtml(post.poster_url)}" alt="${escapeHtml(post.title)} poster" loading="lazy"
+        <img src="${escapeHtml(post.poster_url)}" alt="${escapeHtml(post.title)} poster" loading="lazy" decoding="async"
           onerror="this.style.display='none';this.closest('.poster').classList.add('image-error')">
         <div class="poster-fallback"><span>▶</span><small>Poster unavailable</small></div>
         <span class="play-icon">▶</span>
