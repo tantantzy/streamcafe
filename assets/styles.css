@@ -4661,3 +4661,19 @@ html {
     grid-template-columns: 1fr;
   }
 }
+
+
+/* StreamCafe player fix: native HTML5 controls stay at the bottom.
+   The custom progress overlay is intentionally disabled because it can
+   visually compete with the native seek bar. */
+.reference-player-shell > .watch-progress {
+  display: none !important;
+}
+.reference-player-shell video {
+  position: relative;
+  z-index: 2;
+}
+.reference-player-shell iframe {
+  position: relative;
+  z-index: 1;
+}

@@ -70,24 +70,14 @@ async function setupPlayer(post) {
   drivePlayer.hidden = true;
   loading.hidden = false;
   errorState.hidden = true;
-  watchProgress.hidden = source.type !== "direct";
+  // Both direct files and Google Drive files are played with the native
+  // HTML5 player first. This keeps the real progress/seek bar at the bottom.
+  // Google Drive falls back to its preview iframe only if the direct media
+  // endpoint cannot be played by the browser.
+  watchProgress.hidden = true;
   if (watchProgressBar) watchProgressBar.style.width = "0%";
   externalButton.href = source.externalUrl;
   document.querySelector("#downloadButton").href = source.externalUrl;
-
-  if (source.type === "google-drive") {
-    drivePlayer.src = source.embedUrl;
-    drivePlayer.hidden = false;
-    drivePlayer.addEventListener("load", async () => {
-      loading.hidden = true;
-      await recordHistoryVisit();
-      await trackEvent("play", { postId: post.id, userId: currentUser?.uid || null });
-    }, { once: true });
-    setTimeout(() => {
-      if (!loading.hidden) { loading.hidden = true; errorState.hidden = false; }
-    }, 15000);
-    return;
-  }
 
   videoPlayer.src = source.embedUrl;
   videoPlayer.poster = post.poster_url || "";
@@ -123,7 +113,31 @@ async function setupPlayer(post) {
     trackEvent("complete", { postId: post.id, userId: currentUser?.uid || null });
   });
   videoPlayer.addEventListener("canplay", () => loading.hidden = true, { once: true });
-  videoPlayer.addEventListener("error", () => { loading.hidden = true; errorState.hidden = false; }, { once: true });
+  videoPlayer.addEventListener("error", () => {
+    // Public Google Drive files can sometimes reject direct browser playback
+    // (large files, permissions, or Drive download confirmation). Fall back
+    // to the Drive preview so playback still works.
+    if (source.type === "google-drive" && source.fallbackEmbedUrl) {
+      videoPlayer.pause();
+      videoPlayer.removeAttribute("src");
+      videoPlayer.hidden = true;
+      drivePlayer.src = source.fallbackEmbedUrl;
+      drivePlayer.hidden = false;
+      loading.hidden = false;
+      errorState.hidden = true;
+      drivePlayer.addEventListener("load", async () => {
+        loading.hidden = true;
+        await recordHistoryVisit();
+        await trackEvent("play", { postId: post.id, userId: currentUser?.uid || null });
+      }, { once: true });
+      setTimeout(() => {
+        if (!loading.hidden) { loading.hidden = true; errorState.hidden = false; }
+      }, 15000);
+      return;
+    }
+    loading.hidden = true;
+    errorState.hidden = false;
+  }, { once: true });
   videoPlayer.load();
 }
 

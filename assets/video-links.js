@@ -21,7 +21,11 @@ export function normalizeVideoUrl(url = "") {
   if (id) {
     return {
       type: "google-drive",
-      embedUrl: `https://drive.google.com/file/d/${id}/preview`,
+      // Prefer Google's downloadable media endpoint so the browser's native
+      // HTML5 controls are used. This places the seek/progress control at
+      // the bottom of the player instead of inside the Drive preview iframe.
+      embedUrl: `https://drive.usercontent.google.com/download?id=${encodeURIComponent(id)}&export=download&confirm=t`,
+      fallbackEmbedUrl: `https://drive.google.com/file/d/${id}/preview`,
       externalUrl: `https://drive.google.com/file/d/${id}/view`
     };
   }
